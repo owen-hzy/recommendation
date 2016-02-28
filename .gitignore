@@ -1,0 +1,5 @@
+env/
+.idea/
+.ipynb_checkpoints/
+data/X.csv
+data/Y.csv
