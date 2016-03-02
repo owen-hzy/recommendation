@@ -1,7 +1,7 @@
 env/
 .idea/
 .ipynb_checkpoints/
-data/X.csv
-data/Y.csv
+data/X*.csv
+data/Y*.csv
 *.pyc
 data/R.csv
