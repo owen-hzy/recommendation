@@ -12,6 +12,11 @@ This repository is for FYP only
     pip install -r requirement.txt
     ```
     
-2. Ready to go
-    
+2. To see the jupyter notebook, e.g. *.ipynb, run the following command to start jupyter server locally, then select the notebook at **http://localhost:8080**
 
+	```
+	source env/bin/active
+	ipython notebook
+	```
+	
+3. Ready to go

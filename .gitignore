@@ -3,3 +3,5 @@ env/
 .ipynb_checkpoints/
 data/X.csv
 data/Y.csv
+*.pyc
+data/R.csv
