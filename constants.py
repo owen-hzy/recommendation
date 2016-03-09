@@ -15,7 +15,7 @@ train_matrix = pd.pivot_table(train_data, values="quantity", index=["customer_id
 test_matrix = pd.pivot_table(test_data, values="quantity", index=["customer_id"], columns=["item_id"], aggfunc=np.sum, fill_value=0)
 
 R = train_matrix.values
-R_t = test_matrix.Cvalues
+R_t = test_matrix.values
 
 P = np.zeros((R.shape[0], R.shape[1]))
 P[R > 0] = 1

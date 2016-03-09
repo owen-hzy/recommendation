@@ -12,41 +12,43 @@ for i in xrange(len(test_nonzero_index[0])):
     customer_id_index_in_train.append(np.where(constants.train_matrix.index == constants.test_matrix.index[test_nonzero_index[0][i]])[0][0])
     item_id_index_in_train.append(np.where(constants.train_matrix.columns == constants.test_matrix.columns[test_nonzero_index[1][i]])[0][0])
 
-# get the predicted matrix
-X = np.loadtxt("data/X_10.csv", delimiter=",")
-Y = np.loadtxt("data/Y_10.csv", delimiter=",")
-P_hat = np.dot(X, Y.T)
-# arg sort by predicted preference
-P_hat_sort = np.argsort(P_hat)
+for f in xrange(2, 10):
 
-############# Popularity based model
-# recommend based on the popularity, e.g. the one purchased the most be recommended first
-# popularity = np.sum(constants.train_matrix, axis=0)
-# popularity_rank = np.argsort(popularity)[::-1]
+    # get the predicted matrix
+    X = np.loadtxt("data/X_" + str(f) + ".csv", delimiter=",")
+    Y = np.loadtxt("data/Y_" + str(f) + ".csv", delimiter=",")
+    P_hat = np.dot(X, Y.T)
+    # arg sort by predicted preference
+    P_hat_sort = np.argsort(P_hat)
 
-############# Item-based neighborhood model
-# S_neighbor = np.subtract(1, pairwise_distances(constants.R.T, metric="cosine"))
-# P_neighbor = np.dot(constants.R, S_neighbor)
-# P_neighbor_sort = np.argsort(P_neighbor)
+    ############# Popularity based model
+    # recommend based on the popularity, e.g. the one purchased the most be recommended first
+    # popularity = np.sum(constants.train_matrix, axis=0)
+    # popularity_rank = np.argsort(popularity)[::-1]
 
-rank_ui = []
-# rank_ui_popularity = []
-# rank_ui_neighbor = []
-r_t_ui = []
-for i in xrange(len(customer_id_index_in_train)):
-    rank_ui.append(np.where(P_hat_sort[customer_id_index_in_train[i]][::-1] == item_id_index_in_train[i])[0][0])
-    # rank_ui_popularity.append(np.where(popularity_rank == item_id_index_in_train[i])[0][0])
-    # rank_ui_neighbor.append(np.where(P_neighbor_sort[customer_id_index_in_train[i]][::-1] == item_id_index_in_train[i])[0][0])
-    r_t_ui.append(constants.R_t[test_nonzero_index[0][i]][test_nonzero_index[1][i]])
+    ############# Item-based neighborhood model
+    # S_neighbor = np.subtract(1, pairwise_distances(constants.R.T, metric="cosine"))
+    # P_neighbor = np.dot(constants.R, S_neighbor)
+    # P_neighbor_sort = np.argsort(P_neighbor)
 
-# number of item
-n = P_hat.shape[1]
+    rank_ui = []
+    # rank_ui_popularity = []
+    # rank_ui_neighbor = []
+    r_t_ui = []
+    for i in xrange(len(customer_id_index_in_train)):
+        rank_ui.append(np.where(P_hat_sort[customer_id_index_in_train[i]][::-1] == item_id_index_in_train[i])[0][0])
+        # rank_ui_popularity.append(np.where(popularity_rank == item_id_index_in_train[i])[0][0])
+        # rank_ui_neighbor.append(np.where(P_neighbor_sort[customer_id_index_in_train[i]][::-1] == item_id_index_in_train[i])[0][0])
+        r_t_ui.append(constants.R_t[test_nonzero_index[0][i]][test_nonzero_index[1][i]])
 
-rank_ui = np.true_divide(rank_ui, n)
-# rank_ui_popularity = np.true_divide(rank_ui_popularity, n)
-# rank_ui_neighbor = np.true_divide(rank_ui_neighbor, n)
-rank_bar = np.average(rank_ui, weights=r_t_ui)
-# rank_bar_popularity = np.average(rank_ui_popularity, weights=r_t_ui)
-# rank_bar_neighbor = np.average(rank_ui_neighbor, weights=r_t_ui)
+    # number of item
+    n = P_hat.shape[1]
 
-print rank_bar
+    rank_ui = np.true_divide(rank_ui, n)
+    # rank_ui_popularity = np.true_divide(rank_ui_popularity, n)
+    # rank_ui_neighbor = np.true_divide(rank_ui_neighbor, n)
+    rank_bar = np.average(rank_ui, weights=r_t_ui)
+    # rank_bar_popularity = np.average(rank_ui_popularity, weights=r_t_ui)
+    # rank_bar_neighbor = np.average(rank_ui_neighbor, weights=r_t_ui)
+
+    print "factor: %s, rank_bar: %s" % (f, rank_bar)

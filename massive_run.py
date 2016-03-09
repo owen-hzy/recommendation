@@ -4,9 +4,9 @@ import numpy as np
 from numpy.linalg import inv
 import time
 
-factor = [10, 20, 30, 40, 50]
+factor = [3]
 alpha = 40
-lambda_reg = 2
+lambda_reg = 0.02
 R = np.loadtxt("data/R.csv", delimiter=",")
 
 # P is the preference matrix
