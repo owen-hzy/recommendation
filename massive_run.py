@@ -2,10 +2,16 @@
 
 import numpy as np
 from numpy.linalg import inv
+import pandas as pd
 import time
+import multiprocessing as mp
+import sys
+
+# Define an output queue
+output = mp.Queue()
 
 factor = [3]
-alpha = 40
+alpha = 20
 lambda_reg = 0.02
 R = np.loadtxt("data/R.csv", delimiter=",")
 
@@ -23,10 +29,24 @@ I_n = np.zeros((R.shape[1], R.shape[1]))
 np.fill_diagonal(I_m, 1)
 np.fill_diagonal(I_n, 1)
 
+
 def compute_X(X, Y, I_f):
     Y_T_times_Y = np.dot(Y.T, Y)
 
     for row_index in xrange(R.shape[0]):
+        C_u = np.zeros((R.shape[1], R.shape[1]))
+        for index in xrange(R.shape[1]):
+            C_u[index][index] = C[row_index][index]
+
+        first_part = inv(Y_T_times_Y + np.dot(np.dot(Y.T, C_u - I_n), Y) + lambda_reg * I_f)
+        second_part = np.dot(np.dot(Y.T, C_u), P[row_index])
+
+        X[row_index] = np.dot(first_part, second_part)
+
+def compute_X_PARA(Y_T_times_Y, I_f, start_row, end_row, queue):
+    # Y_T_times_Y = np.dot(Y.T, Y)
+
+    for row_index in xrange(start_row, end_row):
         C_u = np.zeros((R.shape[1], R.shape[1]))
         for index in xrange(R.shape[1]):
             C_u[index][index] = C[row_index][index]
@@ -55,18 +75,24 @@ for f in factor:
     I_f = np.zeros((f, f))
     np.fill_diagonal(I_f, 1)
 
+    # X = np.loadtxt("data/X_" + str(f) + ".csv", delimiter=",")
+    # Y = np.loadtxt("data/Y_" + str(f) + ".csv", delimiter=",")
     X = np.random.uniform(0, 1, size=(R.shape[0], f))
     Y = np.random.uniform(0, 1, size=(R.shape[1], f))
 
     fo_run_status.write("\n\nfactor: %s\n\n" % (f))
 
-    for i in xrange(10):
+    for i in xrange(1):
         start_time = time.time()
         X_old = np.copy(X)
         Y_old = np.copy(Y)
 
-        #compute_Y(X, Y, I_f)
-        #compute_X(X, Y, I_f)
+        compute_Y(X, Y, I_f)
+        compute_X(X, Y, I_f)
+        # Y_T_times_Y = np.dot(Y.T, Y)
+        # single = R.shape[0] / 4
+        # load = [[0, single], [single, 2 * single], [2 * single, 3 * single], [3 * single, R.shape[0]]]
+        # processes  = [mp.Process(target=compute_X_PARA, args = (X, Y_T_times_Y, I_f, load[i][0], load[i][1])) for i in range(4)]
 
         X_diff_sum = np.sum(np.power(X - X_old, 2))
         Y_diff_sum = np.sum(np.power(Y - Y_old, 2))

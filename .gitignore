@@ -5,3 +5,4 @@ data/X_*.csv
 data/Y_*.csv
 *.pyc
 data/R.csv
+*.txt
